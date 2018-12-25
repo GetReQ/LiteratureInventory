@@ -20,7 +20,7 @@ namespace literature.inventory.Controllers
       if (name.Length < 3)
         return BadRequest();
 
-      //find publishers
+      //find publisher based on names
       var searchResults = publishers.FindAll(i => 
         i.FirstName.Contains(name, StringComparison.InvariantCultureIgnoreCase) || 
         i.LastName.Contains(name, StringComparison.InvariantCultureIgnoreCase));
