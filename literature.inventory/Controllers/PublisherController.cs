@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using literature.inventory.Models;
 using literature.inventory.Services;
+using System;
+using System.Linq;
 
 namespace literature.inventory.Controllers
 {
@@ -23,16 +25,25 @@ namespace literature.inventory.Controllers
     }
 
     [HttpGet("{id:length(24)}", Name = "GetPublisher")]
-    public ActionResult<Publisher> Get(string id)
+    public ActionResult<List<Publisher>> Get([FromQuery]string name)
     {
-      var pub = _publisherService.Get(id);
+      if (name.Length < 3)
+        return BadRequest();
 
-      if (pub == null)
-      {
+      var publishers = _publisherService.Get();
+
+      if (string.IsNullOrEmpty(name))
+        return Ok(publishers);
+
+      //find publisher based on names
+      var searchResults = publishers.FindAll(i => 
+        i.FirstName.Contains(name, StringComparison.InvariantCultureIgnoreCase) || 
+        i.LastName.Contains(name, StringComparison.InvariantCultureIgnoreCase));
+
+      if (searchResults == null || searchResults.Count() == 0)
         return NotFound();
-      }
 
-      return pub;
+      return Ok(searchResults);
     }
 
     [HttpPost]
@@ -52,6 +63,8 @@ namespace literature.inventory.Controllers
       {
         return NotFound();
       }
+
+      pubIn.Id = pub.Id;  //ensure the publisher passed in has the correct ID
 
       _publisherService.Update(id, pubIn);
 
