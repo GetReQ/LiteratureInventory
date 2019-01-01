@@ -32,6 +32,7 @@ namespace literature.inventory
       //=========Add Literature Services=========
       services.AddScoped<PublisherService>();
       services.AddScoped<PublicationService>();
+      services.AddScoped<OrderService>();
       //=========================================
 
       services.AddMvc()
